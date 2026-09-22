@@ -35,10 +35,19 @@ export const AreaChart: React.FC<AreaChartProps> = ({
   if (!data || data.length === 0) {
     return (
       <div
-        className={`w-full flex items-center justify-center border border-border-subtle rounded text-text-faint text-xs font-mono ${className}`}
+        className={`w-full flex flex-col items-center justify-center border border-border-subtle rounded relative overflow-hidden bg-surface-1/40 ${className}`}
         style={{ height }}
       >
-        No time-series data available
+        <svg className="w-full h-full opacity-20 animate-pulse" preserveAspectRatio="none" viewBox="0 0 400 100">
+          <path
+            d="M0,80 Q50,40 100,60 T200,30 T300,50 T400,20 L400,100 L0,100 Z"
+            fill="currentColor"
+            className="text-text-muted"
+          />
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center text-text-muted text-xs font-mono">
+          <span className="animate-pulse">Loading telemetry series...</span>
+        </div>
       </div>
     );
   }

@@ -23,71 +23,36 @@ export const OverviewPage: React.FC = () => {
 
   useGSAP(
     () => {
-      const heroTl = gsap.timeline({ defaults: { ease: "power3.out" } });
+      const heroTl = gsap.timeline({ defaults: { ease: "power2.out" } });
       heroTl
-        .from(".hero-title-line", { opacity: 0, y: 32, duration: 0.7, stagger: 0.12, delay: 0.1 })
-        .from(".hero-body", { opacity: 0, y: 16, duration: 0.5 }, "-=0.25")
-        .from(".hero-cta-group", { opacity: 0, y: 12, duration: 0.45 }, "-=0.15");
+        .fromTo(".hero-title-line", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, delay: 0.05 })
+        .fromTo(".hero-body", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.4 }, "-=0.2")
+        .fromTo(".hero-cta-group", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.35 }, "-=0.15");
 
-      const kpiMetrics = containerRef.current?.querySelectorAll(".kpi-metric");
-      if (kpiMetrics && kpiMetrics.length > 0) {
-        gsap.from(kpiMetrics, {
-          scrollTrigger: { trigger: ".kpi-strip", start: "top 85%" },
-          opacity: 0,
-          y: 24,
-          duration: 0.5,
-          stagger: 0.08,
-          ease: "power2.out",
-        });
-      }
-
-      const marketRows = containerRef.current?.querySelectorAll(".market-row");
-      if (marketRows && marketRows.length > 0) {
-        gsap.from(marketRows, {
-          scrollTrigger: { trigger: ".markets-section", start: "top 82%" },
-          opacity: 0,
-          x: -8,
-          duration: 0.35,
-          stagger: 0.05,
-          ease: "power2.out",
-        });
-      }
-
-      const volSection = containerRef.current?.querySelector(".volume-section");
-      if (volSection) {
-        gsap.from(volSection, {
-          scrollTrigger: { trigger: volSection, start: "top 85%" },
-          opacity: 0,
-          y: 28,
-          duration: 0.6,
-          ease: "power2.out",
-        });
-      }
-
-      const tradesSection = containerRef.current?.querySelector(".trades-section");
-      if (tradesSection) {
-        gsap.from(tradesSection, {
-          scrollTrigger: { trigger: tradesSection, start: "top 85%" },
-          opacity: 0,
-          y: 24,
-          duration: 0.5,
-          ease: "power2.out",
-        });
-      }
-
-      const archPillars = containerRef.current?.querySelectorAll(".arch-pillar");
-      if (archPillars && archPillars.length > 0) {
-        gsap.from(archPillars, {
-          scrollTrigger: { trigger: ".architecture-section", start: "top 85%" },
-          opacity: 0,
-          y: 32,
-          duration: 0.5,
-          stagger: 0.12,
-          ease: "power2.out",
+      const sections = containerRef.current?.querySelectorAll(
+        ".kpi-strip, .markets-section, .volume-section, .trades-section, .architecture-section"
+      );
+      if (sections) {
+        sections.forEach((sec) => {
+          gsap.fromTo(
+            sec,
+            { opacity: 0, y: 16 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.45,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: sec,
+                start: "top 95%",
+                once: true,
+              },
+            }
+          );
         });
       }
     },
-    { scope: containerRef, dependencies: [markets.length] }
+    { scope: containerRef }
   );
 
   return (
@@ -210,7 +175,31 @@ export const OverviewPage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-border-subtle font-mono">
-              {markets.map((m) => {
+              {markets.length === 0 ? (
+                [1, 2, 3, 4].map((i) => (
+                  <tr key={i} className="animate-pulse">
+                    <td className="py-4 px-5">
+                      <div className="h-4 bg-surface-2 rounded w-28" />
+                    </td>
+                    <td className="py-4 px-5 text-right">
+                      <div className="h-4 bg-surface-2 rounded w-20 ml-auto" />
+                    </td>
+                    <td className="py-4 px-5 text-right">
+                      <div className="h-4 bg-surface-2 rounded w-16 ml-auto" />
+                    </td>
+                    <td className="py-4 px-5 text-right">
+                      <div className="h-4 bg-surface-2 rounded w-24 ml-auto" />
+                    </td>
+                    <td className="py-4 px-5 text-right hidden lg:table-cell">
+                      <div className="h-4 bg-surface-2 rounded w-16 ml-auto" />
+                    </td>
+                    <td className="py-4 px-5 text-right">
+                      <div className="h-4 bg-surface-2 rounded w-12 ml-auto" />
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                markets.map((m) => {
                 const ticker = tickers[m.symbol];
                 const price = ticker?.close;
                 const change = ticker?.change24hPercent || 0;
@@ -260,7 +249,7 @@ export const OverviewPage: React.FC = () => {
                     </td>
                   </tr>
                 );
-              })}
+              }))}
             </tbody>
           </table>
         </div>
@@ -326,7 +315,28 @@ export const OverviewPage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-border-subtle font-mono">
-              {trades.slice(0, 10).map((t, idx) => (
+              {trades.length === 0 ? (
+                [1, 2, 3, 4, 5].map((i) => (
+                  <tr key={i} className="animate-pulse">
+                    <td className="py-3 px-5">
+                      <div className="h-4 bg-surface-2 rounded w-12" />
+                    </td>
+                    <td className="py-3 px-5 text-right">
+                      <div className="h-4 bg-surface-2 rounded w-20 ml-auto" />
+                    </td>
+                    <td className="py-3 px-5 text-right">
+                      <div className="h-4 bg-surface-2 rounded w-16 ml-auto" />
+                    </td>
+                    <td className="py-3 px-5 text-right hidden sm:table-cell">
+                      <div className="h-4 bg-surface-2 rounded w-20 ml-auto" />
+                    </td>
+                    <td className="py-3 px-5 text-right">
+                      <div className="h-4 bg-surface-2 rounded w-16 ml-auto" />
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                trades.slice(0, 10).map((t, idx) => (
                 <tr
                   key={t.id}
                   className={`table-row-interactive ${
@@ -353,7 +363,7 @@ export const OverviewPage: React.FC = () => {
                     {formatRelativeTime(t.timestamp)}
                   </td>
                 </tr>
-              ))}
+              )))}
             </tbody>
           </table>
         </div>
