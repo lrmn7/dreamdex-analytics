@@ -23,6 +23,25 @@ export const MediaBackground: React.FC<MediaBackgroundProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (variant === "video" && videoRef.current) {
+      const vid = videoRef.current;
+      vid.defaultMuted = true;
+      vid.muted = true;
+      vid.loop = true;
+      vid.playsInline = true;
+      vid.setAttribute("muted", "");
+      vid.setAttribute("playsinline", "");
+      vid.setAttribute("loop", "");
+      vid.setAttribute("autoplay", "");
+      const playPromise = vid.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {});
+      }
+    }
+  }, [variant, src]);
 
   useEffect(() => {
     if (variant === "video" || variant === "image") return;
@@ -220,12 +239,25 @@ export const MediaBackground: React.FC<MediaBackgroundProps> = ({
     >
       {variant === "video" && src ? (
         <video
+          ref={videoRef}
           autoPlay
           loop
           muted
           playsInline
           poster={poster}
-          className="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none"
+          preload="auto"
+          disablePictureInPicture
+          controls={false}
+          className={`absolute inset-0 w-full h-full object-cover pointer-events-none transition-opacity duration-700 ${
+            intensity === "high"
+              ? "opacity-35"
+              : intensity === "medium"
+              ? "opacity-25"
+              : "opacity-15"
+          }`}
+          onEnded={(e) => {
+            e.currentTarget.play().catch(() => {});
+          }}
         >
           <source src={src} type="video/mp4" />
         </video>

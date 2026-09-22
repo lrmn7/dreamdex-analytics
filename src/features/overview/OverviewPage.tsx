@@ -19,9 +19,9 @@ export const OverviewPage: React.FC = () => {
   return (
     <div ref={containerRef}>
       <MediaBackground
-        variant="canvas-mesh"
+        variant="video"
+        src="/bg.mp4"
         intensity="medium"
-        interactive={true}
         className="border-b border-border"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-28 sm:pt-40 sm:pb-36 lg:pt-44 lg:pb-40">
