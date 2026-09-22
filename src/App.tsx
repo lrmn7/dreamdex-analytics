@@ -14,6 +14,7 @@ import { LendPage } from "@/features/lend/LendPage";
 import { DevelopersPage } from "@/features/developers/DevelopersPage";
 import { MethodologyPage } from "@/features/methodology/MethodologyPage";
 import { StatusPage } from "@/features/status/StatusPage";
+import { GlobalPageBackground } from "@/components/ui/GlobalPageBackground";
 import { Button } from "@/components/ui/Button";
 import { AlertCircle } from "lucide-react";
 
@@ -56,11 +57,12 @@ export const App: React.FC = () => {
   const location = useLocation();
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-text-primary selection:bg-surface-3 selection:text-text-primary">
+    <div className="min-h-screen flex flex-col bg-background text-text-primary selection:bg-surface-3 selection:text-text-primary relative">
       <ScrollToTop />
+      <GlobalPageBackground />
       <Navbar />
 
-      <main key={location.pathname} className="flex-1 animate-page-enter">
+      <main key={location.pathname} className="relative z-10 flex-1 animate-page-enter">
         <Routes location={location}>
           <Route path="/" element={<OverviewPage />} />
           <Route path="/markets" element={<MarketsPage />} />
