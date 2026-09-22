@@ -1,16 +1,10 @@
 import React, { useRef, useEffect } from "react";
-import { useLocation } from "react-router-dom";
 
 export const GlobalPageBackground: React.FC = () => {
-  const { pathname } = useLocation();
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Background video is active on all pages except the Home page ("/")
-  // On Home, the video is strictly confined to the hero section.
-  const isHome = pathname === "/";
-
   useEffect(() => {
-    if (!isHome && videoRef.current) {
+    if (videoRef.current) {
       const vid = videoRef.current;
       vid.defaultMuted = true;
       vid.muted = true;
@@ -25,11 +19,7 @@ export const GlobalPageBackground: React.FC = () => {
         playPromise.catch(() => {});
       }
     }
-  }, [isHome]);
-
-  if (isHome) {
-    return null;
-  }
+  }, []);
 
   return (
     <div
@@ -45,7 +35,7 @@ export const GlobalPageBackground: React.FC = () => {
         preload="auto"
         disablePictureInPicture
         controls={false}
-        className="w-full h-full object-cover opacity-20 pointer-events-none transition-opacity duration-700"
+        className="w-full h-full object-cover opacity-25 pointer-events-none transition-opacity duration-700"
         onEnded={(e) => {
           e.currentTarget.play().catch(() => {});
         }}
@@ -55,7 +45,7 @@ export const GlobalPageBackground: React.FC = () => {
 
       {/* Dimmed ambient overlay to maintain text contrast and dashboard readability */}
       <div className="absolute inset-0 bg-background/60 pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-transparent to-background/80 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background/80 pointer-events-none" />
     </div>
   );
 };

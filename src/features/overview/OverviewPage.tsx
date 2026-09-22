@@ -4,7 +4,6 @@ import { useOverviewMetrics, useMarkets, useLiveTrades, useVolumeAnalytics } fro
 import { formatCurrency, formatNumber, formatBps, formatRelativeTime, formatPrice } from "@/lib/formatters";
 import { Button } from "@/components/ui/Button";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import { MediaBackground } from "@/components/ui/MediaBackground";
 import { AreaChart } from "@/components/charts/AreaChart";
 import { ArrowRight, ChevronRight, Activity, ShieldCheck, Zap } from "lucide-react";
 
@@ -18,12 +17,7 @@ export const OverviewPage: React.FC = () => {
 
   return (
     <div ref={containerRef}>
-      <MediaBackground
-        variant="video"
-        src="/bg.mp4"
-        intensity="medium"
-        className="border-b border-border"
-      >
+      <section className="border-b border-border relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-28 sm:pt-40 sm:pb-36 lg:pt-44 lg:pb-40">
           <div className="max-w-3xl space-y-8">
             <h1 className="text-text-primary leading-[1.04]">
@@ -54,7 +48,7 @@ export const OverviewPage: React.FC = () => {
             </div>
           </div>
         </div>
-      </MediaBackground>
+      </section>
       <section className="kpi-strip max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10">
           <div className="kpi-metric space-y-2 col-span-2 lg:col-span-1 border-l-2 border-text-primary pl-5">
