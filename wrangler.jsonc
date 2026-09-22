@@ -1,0 +1,36 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "dreamdex-analytics",
+  "main": "worker/index.ts",
+  "compatibility_date": "2024-12-30",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "dreamdex",
+      "database_id": "eb27d0ab-24bc-41e7-b883-08eafdbf60db",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "triggers": {
+    "crons": [
+      "* * * * *",
+      "0 * * * *",
+      "0 0 * * *"
+    ]
+  },
+  "vars": {
+    "DREAMDEX_REST_URL": "https://api.dreamdex.io/v0",
+    "DREAMDEX_WS_URL": "wss://api.dreamdex.io/v0/ws/public",
+    "SOMNIA_CHAIN_ID": "5031",
+    "SOMNIA_RPC_MAINNET_URL": "https://api.infra.mainnet.somnia.network",
+    "SOMNIA_RPC_TESTNET_URL": "https://dream-rpc.somnia.network",
+    "SOMNIA_RPC_URL": "https://api.infra.mainnet.somnia.network",
+    "SOMNIA_EXPLORER_URL": "https://explorer.somnia.network"
+  }
+}

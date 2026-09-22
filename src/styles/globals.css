@@ -1,0 +1,251 @@
+@import "./tokens.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--text-primary);
+    font-family: Geist, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Monospace numbers with tabular figures for stability */
+  .font-mono,
+  .tabular-nums {
+    font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-feature-settings: "tnum" 1, "zero" 1;
+  }
+
+  /* Accessible focus indicators in monochrome */
+  :focus-visible {
+    outline: 2px solid var(--text-primary);
+    outline-offset: 2px;
+  }
+
+  /* Custom dark scrollbar */
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--border-strong);
+  }
+}
+
+/* ──────────────────────────────────────
+   TRADE FEED ANIMATIONS
+   ────────────────────────────────────── */
+@keyframes trade-flash {
+  0% {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.animate-trade-flash {
+  animation: trade-flash 800ms var(--ease-out-expo) forwards;
+}
+
+/* ──────────────────────────────────────
+   PAGE TRANSITIONS
+   ────────────────────────────────────── */
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-page-enter {
+  animation: page-fade-in 280ms var(--ease-out-expo) forwards;
+}
+
+/* ──────────────────────────────────────
+   TABLE REFINEMENTS
+   ────────────────────────────────────── */
+/* Row entrance stagger for tables populated via WS */
+@keyframes row-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-row-enter {
+  animation: row-slide-in 200ms var(--ease-out-expo) forwards;
+}
+
+/* Enhanced table row hover with left accent line */
+.table-row-interactive {
+  position: relative;
+  transition: background-color 150ms ease;
+}
+
+.table-row-interactive::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 2px;
+  background: var(--text-primary);
+  opacity: 0;
+  transform: scaleY(0);
+  transition: opacity 150ms ease, transform 200ms var(--ease-out-expo);
+}
+
+.table-row-interactive:hover::before {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+.table-row-interactive:hover {
+  background-color: rgba(255, 255, 255, 0.025);
+}
+
+/* ──────────────────────────────────────
+   DEPTH BAR & PROGRESS TRANSITIONS
+   ────────────────────────────────────── */
+.depth-bar-transition {
+  transition: width 240ms var(--ease-out-expo);
+}
+
+/* Progress bar fill animation */
+@keyframes bar-fill {
+  from { width: 0; }
+}
+
+.animate-bar-fill {
+  animation: bar-fill 600ms var(--ease-out-expo) forwards;
+}
+
+/* ──────────────────────────────────────
+   NUMBER VALUE TRANSITION
+   ────────────────────────────────────── */
+.value-transition {
+  transition: color 300ms ease;
+}
+
+.value-up {
+  color: var(--text-primary) !important;
+}
+
+.value-down {
+  color: var(--text-muted) !important;
+}
+
+/* ──────────────────────────────────────
+   EDITORIAL SECTION DIVIDERS & PANELS
+   ────────────────────────────────────── */
+.section-hairline {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--border-strong) 15%,
+    var(--border-strong) 85%,
+    transparent
+  );
+}
+
+.terminal-border {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.terminal-panel {
+  background-color: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  position: relative;
+}
+
+/* High-contrast side execution badges */
+.badge-execution-buy {
+  background-color: var(--white);
+  color: var(--black);
+  font-weight: 600;
+  font-family: "Geist Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  padding: 1px 6px;
+  border-radius: 2px;
+}
+
+.badge-execution-sell {
+  background-color: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-strong);
+  font-weight: 500;
+  font-family: "Geist Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  padding: 0px 5px;
+  border-radius: 2px;
+}
+
+/* ──────────────────────────────────────
+   BUTTON PRESS FEEDBACK
+   ────────────────────────────────────── */
+button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* ──────────────────────────────────────
+   SCROLL REVEAL UTILITIES
+   ────────────────────────────────────── */
+.reveal-hidden {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 500ms var(--ease-out-expo), transform 500ms var(--ease-out-expo);
+}
+
+/* ──────────────────────────────────────
+   REDUCED MOTION
+   ────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
