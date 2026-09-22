@@ -10,7 +10,7 @@ type Bindings = {
   SOMNIA_RPC_URL?: string;
 };
 
-const app = new Hono<{ Bindings: Bindings }>();
+export const app = new Hono<{ Bindings: Bindings }>();
 
 app.use("/api/*", cors());
 

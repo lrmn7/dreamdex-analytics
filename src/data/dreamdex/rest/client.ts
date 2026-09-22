@@ -2,9 +2,6 @@ import { Market, Ticker, OrderBook, Candle, CandleInterval } from "@/domain/mark
 import { Trade } from "@/domain/trade";
 
 const getBaseUrl = (): string => {
-  if (typeof window !== "undefined") {
-    return "/api/dreamdex/v0";
-  }
   return "https://api.dreamdex.io/v0";
 };
 

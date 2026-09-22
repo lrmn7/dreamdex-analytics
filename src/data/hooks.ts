@@ -494,7 +494,7 @@ export function useDataHealth() {
       let restOk = false;
       let restLatency = 0;
       try {
-        const res = await fetch("/api/dreamdex/v0/tickers");
+        const res = await fetch("https://api.dreamdex.io/v0/tickers");
         restLatency = Math.round(performance.now() - start);
         restOk = res.ok;
       } catch {
@@ -506,7 +506,7 @@ export function useDataHealth() {
 
       let marketsOk = false;
       try {
-        const mRes = await fetch("/api/dreamdex/v0/markets");
+        const mRes = await fetch("https://api.dreamdex.io/v0/markets");
         marketsOk = mRes.ok;
       } catch {
         marketsOk = false;
