@@ -315,10 +315,15 @@ export const OverviewPage: React.FC = () => {
                     {formatPrice(t.price, "SOMI:USDso")}
                   </td>
                   <td className="py-3 px-5 text-right text-text-secondary">
-                    {formatNumber(t.amount, 2)}
+                    {formatNumber(parseFloat(t.amount || (t as any).quantity || "0"), 2)}
                   </td>
                   <td className="py-3 px-5 text-right text-text-primary font-medium hidden sm:table-cell">
-                    {formatCurrency(t.cost, { compact: false })}
+                    {formatCurrency(
+                      (t.cost && !isNaN(parseFloat(t.cost)) && parseFloat(t.cost) > 0)
+                        ? parseFloat(t.cost)
+                        : parseFloat(t.price || "0") * parseFloat(t.amount || (t as any).quantity || "0"),
+                      { compact: false }
+                    )}
                   </td>
                   <td className="py-3 px-5 text-right text-text-muted">
                     {formatRelativeTime(t.timestamp)}

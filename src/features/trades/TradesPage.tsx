@@ -127,10 +127,14 @@ export const TradesPage: React.FC = () => {
                   {formatCurrency(t.price, { decimals: (t.symbol || selectedSymbol || "").includes("WBTC") ? 2 : 4 })}
                 </td>
                 <td className="py-3 px-5 text-right text-text-secondary">
-                  {formatNumber(t.amount, 4)}
+                  {formatNumber(parseFloat(t.amount || (t as any).quantity || "0"), 4)}
                 </td>
                 <td className="py-3 px-5 text-right text-text-primary hidden sm:table-cell">
-                  {formatCurrency(t.cost || parseFloat(t.price || "0") * parseFloat(t.amount || "0"))}
+                  {formatCurrency(
+                    (t.cost && !isNaN(parseFloat(t.cost)) && parseFloat(t.cost) > 0)
+                      ? parseFloat(t.cost)
+                      : parseFloat(t.price || "0") * parseFloat(t.amount || (t as any).quantity || "0")
+                  )}
                 </td>
                 <td className="py-3 px-5 text-right text-text-faint text-[11px] hidden lg:table-cell">
                   {(t.id || "").slice(0, 12)}

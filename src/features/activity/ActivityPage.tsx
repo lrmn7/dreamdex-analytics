@@ -91,14 +91,43 @@ export const ActivityPage: React.FC = () => {
   useEffect(() => {
     loadTrades();
 
+    const normalizeRawTrade = (raw: any, defaultSymbol: string): Trade => {
+      const price = String(raw.price || "0");
+      const amount = String(raw.amount ?? raw.quantity ?? "0");
+      const cost = raw.cost !== undefined && raw.cost !== null && raw.cost !== ""
+        ? String(raw.cost)
+        : String(parseFloat(price) * parseFloat(amount));
+
+      return {
+        id: String(raw.id || `clob-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`),
+        symbol: raw.symbol || defaultSymbol,
+        side: raw.side === "sell" ? "sell" : "buy",
+        price,
+        amount,
+        cost,
+        timestamp: typeof raw.timestamp === "number" ? raw.timestamp : (Date.parse(raw.timestamp) || Date.now()),
+        txHash: raw.txHash || raw.transactionHash,
+      };
+    };
+
     dreamDexWs.subscribe("trades", { symbols: ["SOMI:USDso", "WETH:USDso", "WBTC:USDso"] });
 
     const unsubMsg = dreamDexWs.onMessage((msg) => {
-      if (msg.channel === "trades" && msg.type === "update" && msg.trade) {
-        setTrades((prev) => {
-          if (prev.some((t) => t.id === msg.trade.id)) return prev;
-          return [msg.trade, ...prev.slice(0, 99)];
-        });
+      if (msg.channel === "trades") {
+        const sym = msg.symbol || "SOMI:USDso";
+        if (msg.type === "snapshot" && Array.isArray(msg.trades)) {
+          const norm = msg.trades.map((t: any) => normalizeRawTrade(t, sym));
+          setTrades((prev) => {
+            const combined = [...norm, ...prev];
+            return combined.filter((v, i, a) => a.findIndex((t) => t.id === v.id) === i).slice(0, 100);
+          });
+        } else if (msg.type === "update" && msg.trade) {
+          const norm = normalizeRawTrade(msg.trade, sym);
+          setTrades((prev) => {
+            if (prev.some((t) => t.id === norm.id)) return prev;
+            return [norm, ...prev.slice(0, 99)];
+          });
+        }
       }
     });
 
@@ -202,28 +231,36 @@ export const ActivityPage: React.FC = () => {
                 </td>
               </tr>
             ) : (
-              filteredTrades.map((t, idx) => (
-                <tr key={t.id} className={`table-row-interactive ${idx === 0 ? "animate-trade-flash" : ""}`}>
-                  <td className="py-3 px-5">
-                    <span className={t.side === "buy" ? "badge-execution-buy" : "badge-execution-sell"}>
-                      {t.side.toUpperCase()}
-                    </span>
-                  </td>
-                  <td className="py-3 px-5 font-sans font-medium text-text-primary">
-                    {t.symbol}
-                  </td>
-                  <td className="py-3 px-5 text-right font-medium text-text-primary">
-                    {formatPrice(t.price, t.symbol)}
-                  </td>
-                  <td className="py-3 px-5 text-right text-text-secondary">
-                    {formatNumber(t.amount, 4)}
-                  </td>
-                  <td className="py-3 px-5 text-right text-text-primary font-medium hidden sm:table-cell">
-                    {formatCurrency(t.cost, { compact: false })}
-                  </td>
-                  <td className="py-3 px-5 text-right text-text-muted">
-                    {formatRelativeTime(t.timestamp)}
-                  </td>
+              filteredTrades.map((t, idx) => {
+                const amountNum = parseFloat(t.amount || (t as any).quantity || "0");
+                const priceNum = parseFloat(t.price || "0");
+                const notional = (t.cost !== undefined && t.cost !== null && !isNaN(parseFloat(t.cost)) && parseFloat(t.cost) > 0)
+                  ? parseFloat(t.cost)
+                  : (amountNum * priceNum);
+                const sym = t.symbol || "SOMI:USDso";
+
+                return (
+                  <tr key={t.id} className={`table-row-interactive ${idx === 0 ? "animate-trade-flash" : ""}`}>
+                    <td className="py-3 px-5">
+                      <span className={t.side === "buy" ? "badge-execution-buy" : "badge-execution-sell"}>
+                        {t.side.toUpperCase()}
+                      </span>
+                    </td>
+                    <td className="py-3 px-5 font-sans font-medium text-text-primary">
+                      {sym}
+                    </td>
+                    <td className="py-3 px-5 text-right font-medium text-text-primary">
+                      {formatPrice(t.price, sym)}
+                    </td>
+                    <td className="py-3 px-5 text-right text-text-secondary">
+                      {formatNumber(amountNum, 4)}
+                    </td>
+                    <td className="py-3 px-5 text-right text-text-primary font-medium hidden sm:table-cell">
+                      {formatCurrency(notional, { compact: false })}
+                    </td>
+                    <td className="py-3 px-5 text-right text-text-muted">
+                      {formatRelativeTime(t.timestamp)}
+                    </td>
                   <td className="py-3 px-5 text-right hidden lg:table-cell">
                     {t.txHash ? (
                       <a
@@ -240,8 +277,9 @@ export const ActivityPage: React.FC = () => {
                     )}
                   </td>
                 </tr>
-              ))
-            )}
+              );
+            })
+          )}
           </tbody>
         </table>
       </div>

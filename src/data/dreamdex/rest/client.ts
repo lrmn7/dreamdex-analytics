@@ -155,18 +155,26 @@ export class DreamDexRestClient {
       if (!response.ok) throw new Error(`HTTP error ${response.status}`);
       const data = await response.json();
       if (Array.isArray(data.trades)) {
-        return data.trades.map((t: any) => ({
-          id: t.id,
-          symbol: t.symbol || symbol,
-          timestamp: t.timestamp,
-          price: t.price,
-          amount: t.amount,
-          cost: t.cost,
-          side: t.side,
-          maker: t.maker,
-          taker: t.taker,
-          txHash: t.txHash,
-        }));
+        return data.trades.map((t: any) => {
+          const price = String(t.price || "0");
+          const amount = String(t.amount ?? t.quantity ?? "0");
+          const cost = t.cost !== undefined && t.cost !== null && t.cost !== ""
+            ? String(t.cost)
+            : String(parseFloat(price) * parseFloat(amount));
+
+          return {
+            id: String(t.id || `trade-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`),
+            symbol: t.symbol || symbol,
+            timestamp: typeof t.timestamp === "number" ? t.timestamp : (Date.parse(t.timestamp) || Date.now()),
+            price,
+            amount,
+            cost,
+            side: t.side === "sell" ? "sell" : "buy",
+            maker: t.maker,
+            taker: t.taker,
+            txHash: t.txHash || t.transactionHash,
+          };
+        });
       }
       return [];
     } catch (err) {

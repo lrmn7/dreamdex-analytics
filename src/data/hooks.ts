@@ -170,14 +170,33 @@ export function useLiveTrades(selectedSymbol?: string) {
       setWsState(state);
     });
 
+    const normalizeTrade = (raw: any, defaultSym: string): Trade => {
+      const price = String(raw.price || "0");
+      const amount = String(raw.amount ?? raw.quantity ?? "0");
+      const cost = raw.cost !== undefined && raw.cost !== null && raw.cost !== ""
+        ? String(raw.cost)
+        : String(parseFloat(price) * parseFloat(amount));
+
+      return {
+        id: String(raw.id || `trade-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`),
+        symbol: raw.symbol || defaultSym,
+        side: raw.side === "sell" ? "sell" : "buy",
+        price,
+        amount,
+        cost,
+        timestamp: typeof raw.timestamp === "number" ? raw.timestamp : (Date.parse(raw.timestamp) || Date.now()),
+        txHash: raw.txHash || raw.transactionHash,
+      };
+    };
+
     const unsubMsg = dreamDexWs.onMessage((msg) => {
       if (msg.channel === "trades") {
+        const sym = msg.symbol || symbol;
         if (msg.type === "snapshot" && Array.isArray(msg.trades)) {
-          setTrades(msg.trades.map((t: Trade) => ({ ...t, symbol: t.symbol || symbol })));
+          setTrades(msg.trades.map((t: any) => normalizeTrade(t, sym)));
         } else if (msg.type === "update" && msg.trade) {
-          const tradeWithSymbol: Trade = { ...msg.trade, symbol: msg.trade.symbol || symbol };
+          const tradeWithSymbol = normalizeTrade(msg.trade, sym);
           setTrades((prev) => {
-            // Prevent duplicate trade ids
             if (prev.some((t) => t.id === tradeWithSymbol.id)) return prev;
             return [tradeWithSymbol, ...prev.slice(0, 49)];
           });
