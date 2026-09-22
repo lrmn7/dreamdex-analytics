@@ -157,7 +157,7 @@ export function useLiveTrades(selectedSymbol?: string) {
 
     dreamDexRest.fetchRecentTrades(symbol, 40).then((initial) => {
       if (initial.length > 0) {
-        setTrades(initial);
+        setTrades(initial.map((t) => ({ ...t, symbol: t.symbol || symbol })));
       }
     });
 
@@ -173,12 +173,13 @@ export function useLiveTrades(selectedSymbol?: string) {
     const unsubMsg = dreamDexWs.onMessage((msg) => {
       if (msg.channel === "trades") {
         if (msg.type === "snapshot" && Array.isArray(msg.trades)) {
-          setTrades(msg.trades);
+          setTrades(msg.trades.map((t: Trade) => ({ ...t, symbol: t.symbol || symbol })));
         } else if (msg.type === "update" && msg.trade) {
+          const tradeWithSymbol: Trade = { ...msg.trade, symbol: msg.trade.symbol || symbol };
           setTrades((prev) => {
             // Prevent duplicate trade ids
-            if (prev.some((t) => t.id === msg.trade.id)) return prev;
-            return [msg.trade, ...prev.slice(0, 49)];
+            if (prev.some((t) => t.id === tradeWithSymbol.id)) return prev;
+            return [tradeWithSymbol, ...prev.slice(0, 49)];
           });
         }
       }

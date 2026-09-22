@@ -109,7 +109,9 @@ export const TradesPage: React.FC = () => {
                     ({formatRelativeTime(t.timestamp)})
                   </span>
                 </td>
-                <td className="py-3 px-5 text-text-primary font-medium font-sans">{t.symbol}</td>
+                <td className="py-3 px-5 text-text-primary font-medium font-sans">
+                  {t.symbol || selectedSymbol}
+                </td>
                 <td className="py-3 px-5">
                   <span
                     className={`inline-flex items-center px-2 py-0.5 text-[10px] font-semibold uppercase ${
@@ -122,16 +124,16 @@ export const TradesPage: React.FC = () => {
                   </span>
                 </td>
                 <td className="py-3 px-5 text-right text-text-primary font-medium">
-                  {formatCurrency(t.price, { decimals: t.symbol.includes("WBTC") ? 2 : 4 })}
+                  {formatCurrency(t.price, { decimals: (t.symbol || selectedSymbol || "").includes("WBTC") ? 2 : 4 })}
                 </td>
                 <td className="py-3 px-5 text-right text-text-secondary">
                   {formatNumber(t.amount, 4)}
                 </td>
                 <td className="py-3 px-5 text-right text-text-primary hidden sm:table-cell">
-                  {formatCurrency(t.cost || parseFloat(t.price) * parseFloat(t.amount))}
+                  {formatCurrency(t.cost || parseFloat(t.price || "0") * parseFloat(t.amount || "0"))}
                 </td>
                 <td className="py-3 px-5 text-right text-text-faint text-[11px] hidden lg:table-cell">
-                  {t.id.slice(0, 12)}
+                  {(t.id || "").slice(0, 12)}
                 </td>
               </tr>
             ))
