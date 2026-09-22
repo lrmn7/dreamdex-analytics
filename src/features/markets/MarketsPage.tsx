@@ -6,8 +6,6 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/Button";
 import { Search, ArrowUpDown } from "lucide-react";
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
 
 export const MarketsPage: React.FC = () => {
   const { markets, tickers } = useMarkets();
@@ -16,22 +14,13 @@ export const MarketsPage: React.FC = () => {
   const [sortAsc, setSortAsc] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useGSAP(
-    () => {
-      const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
-      tl.from(".markets-header", { opacity: 0, y: 16, duration: 0.5 })
-        .from(".markets-table", { opacity: 0, y: 18, duration: 0.6 }, "-=0.2");
-    },
-    { scope: containerRef }
-  );
-
   const filteredMarkets = markets
     .filter((m) => {
       const q = searchQuery.toLowerCase();
       return (
         m.symbol.toLowerCase().includes(q) ||
         m.baseCurrency.toLowerCase().includes(q) ||
-        m.contractAddress.toLowerCase().includes(q)
+        (m.contractAddress && m.contractAddress.toLowerCase().includes(q))
       );
     })
     .sort((a, b) => {

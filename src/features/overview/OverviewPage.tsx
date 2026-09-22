@@ -6,12 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { MediaBackground } from "@/components/ui/MediaBackground";
 import { AreaChart } from "@/components/charts/AreaChart";
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowRight, ChevronRight, Activity, ShieldCheck, Zap } from "lucide-react";
-
-gsap.registerPlugin(ScrollTrigger);
 
 export const OverviewPage: React.FC = () => {
   const { metrics } = useOverviewMetrics();
@@ -20,40 +15,6 @@ export const OverviewPage: React.FC = () => {
   const { points: volumePoints } = useVolumeAnalytics("30d");
 
   const containerRef = useRef<HTMLDivElement>(null);
-
-  useGSAP(
-    () => {
-      const heroTl = gsap.timeline({ defaults: { ease: "power2.out" } });
-      heroTl
-        .fromTo(".hero-title-line", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, delay: 0.05 })
-        .fromTo(".hero-body", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.4 }, "-=0.2")
-        .fromTo(".hero-cta-group", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.35 }, "-=0.15");
-
-      const sections = containerRef.current?.querySelectorAll(
-        ".kpi-strip, .markets-section, .volume-section, .trades-section, .architecture-section"
-      );
-      if (sections) {
-        sections.forEach((sec) => {
-          gsap.fromTo(
-            sec,
-            { opacity: 0, y: 16 },
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.45,
-              ease: "power2.out",
-              scrollTrigger: {
-                trigger: sec,
-                start: "top 95%",
-                once: true,
-              },
-            }
-          );
-        });
-      }
-    },
-    { scope: containerRef }
-  );
 
   return (
     <div ref={containerRef}>

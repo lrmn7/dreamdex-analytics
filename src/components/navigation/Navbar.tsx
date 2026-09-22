@@ -9,7 +9,8 @@ export const Navbar: React.FC = () => {
   const primaryNavItems = [
     { label: "Overview", href: "/" },
     { label: "Markets", href: "/markets" },
-    { label: "Analytics", href: "/analytics" },
+    { label: "Volume", href: "/volume" },
+    { label: "Liquidity", href: "/liquidity" },
     { label: "Activity", href: "/activity" },
     { label: "Events", href: "/events" },
     { label: "Lend", href: "/lend" },

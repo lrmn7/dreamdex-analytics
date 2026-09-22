@@ -8,8 +8,6 @@ import { DepthChart } from "@/components/charts/DepthChart";
 import { DataPanel } from "@/components/ui/DataPanel";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { ArrowLeft, ExternalLink } from "lucide-react";
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
 
 export const MarketDetailPage: React.FC = () => {
   const { symbol: rawSymbol = "SOMI:USDso" } = useParams<{ symbol: string }>();
@@ -23,16 +21,6 @@ export const MarketDetailPage: React.FC = () => {
   const { orderBook } = useOrderBook(symbol);
   const { trades, wsState } = useLiveTrades(symbol);
   const { candles } = useCandles(symbol, selectedInterval);
-
-  useGSAP(
-    () => {
-      const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
-      tl.from(".detail-header", { opacity: 0, y: 16, duration: 0.5 })
-        .from(".detail-charts", { opacity: 0, y: 18, duration: 0.6 }, "-=0.2")
-        .from(".detail-book", { opacity: 0, y: 18, duration: 0.6 }, "-=0.2");
-    },
-    { scope: containerRef }
-  );
 
   const market = markets.find((m) => m.symbol === symbol) || {
     symbol,

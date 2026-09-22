@@ -3,9 +3,6 @@ import { useLiveTrades, useMarkets } from "@/data/hooks";
 import { formatNumber, formatCurrency, formatTimestamp, formatRelativeTime } from "@/lib/formatters";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
-
 export const TradesPage: React.FC = () => {
   const { markets } = useMarkets();
   const [selectedSymbol, setSelectedSymbol] = useState("SOMI:USDso");
@@ -14,16 +11,6 @@ export const TradesPage: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const { trades, wsState } = useLiveTrades(selectedSymbol);
-
-  useGSAP(
-    () => {
-      const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
-      tl.from(".trades-header", { opacity: 0, y: 10, duration: 0.35 })
-        .from(".trades-filter", { opacity: 0, y: 8, duration: 0.3 }, "-=0.1")
-        .from(".trades-table", { opacity: 0, duration: 0.4 }, "-=0.1");
-    },
-    { scope: containerRef }
-  );
 
   const filteredTrades = trades.filter((t) => {
     if (sideFilter !== "all" && t.side !== sideFilter) return false;
@@ -107,7 +94,14 @@ export const TradesPage: React.FC = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-border-subtle font-mono">
-            {filteredTrades.map((t, idx) => (
+            {filteredTrades.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="py-16 text-center text-text-muted">
+                  Streaming trades for {selectedSymbol}... Executed fills will appear here.
+                </td>
+              </tr>
+            ) : (
+              filteredTrades.map((t, idx) => (
               <tr key={t.id} className={`table-row-interactive ${idx === 0 ? "animate-trade-flash" : ""}`}>
                 <td className="py-3 px-5 text-text-secondary">
                   <span>{formatTimestamp(t.timestamp)}</span>
@@ -140,7 +134,8 @@ export const TradesPage: React.FC = () => {
                   {t.id.slice(0, 12)}
                 </td>
               </tr>
-            ))}
+            ))
+          )}
           </tbody>
         </table>
       </div>

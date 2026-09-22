@@ -5,11 +5,6 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { DataPanel } from "@/components/ui/DataPanel";
 import { AreaChart } from "@/components/charts/AreaChart";
 import { Link } from "react-router-dom";
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
 
 export const VolumePage: React.FC = () => {
   const [range, setRange] = useState<"24h" | "7d" | "30d" | "90d">("30d");
@@ -18,25 +13,6 @@ export const VolumePage: React.FC = () => {
 
   const ranges: Array<"24h" | "7d" | "30d" | "90d"> = ["24h", "7d", "30d", "90d"];
   const totalRangeVolume = points.reduce((sum, p) => sum + p.volumeUsd, 0);
-
-  useGSAP(
-    () => {
-      const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
-      tl.from(".volume-header", { opacity: 0, y: 12, duration: 0.4 })
-        .from(".volume-kpi-item", { opacity: 0, y: 20, duration: 0.45, stagger: 0.06 }, "-=0.15")
-        .from(".volume-chart", { opacity: 0, y: 24, duration: 0.55 }, "-=0.15");
-
-      gsap.from(".breakdown-bar", {
-        scrollTrigger: { trigger: ".volume-breakdown", start: "top 85%" },
-        scaleX: 0,
-        transformOrigin: "left center",
-        duration: 0.5,
-        stagger: 0.06,
-        ease: "power2.out",
-      });
-    },
-    { scope: containerRef }
-  );
 
   return (
     <div ref={containerRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 space-y-14 font-sans">

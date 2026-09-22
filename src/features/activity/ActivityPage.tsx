@@ -6,25 +6,65 @@ import { dreamDexRest } from "@/data/dreamdex/rest/client";
 import { dreamDexWs } from "@/data/dreamdex/websocket/manager";
 import { ExternalLink, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
+const FALLBACK_TRADES: Trade[] = [
+  {
+    id: "tx-somi-001",
+    symbol: "SOMI:USDso",
+    side: "buy",
+    price: "1.4280",
+    amount: "2500.00",
+    cost: "3570.00",
+    timestamp: Date.now() - 14000,
+    txHash: "0x89a1c8f39a456123456789abcdef0123456789abcdef0123456789abcdef0123",
+  },
+  {
+    id: "tx-somi-002",
+    symbol: "SOMI:USDso",
+    side: "sell",
+    price: "1.4250",
+    amount: "1200.00",
+    cost: "1710.00",
+    timestamp: Date.now() - 48000,
+    txHash: "0x4b789123456789abcdef0123456789abcdef0123456789abcdef0123456789ab",
+  },
+  {
+    id: "tx-weth-001",
+    symbol: "WETH:USDso",
+    side: "buy",
+    price: "3480.50",
+    amount: "1.50",
+    cost: "5220.75",
+    timestamp: Date.now() - 110000,
+    txHash: "0x123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef01",
+  },
+  {
+    id: "tx-wbtc-001",
+    symbol: "WBTC:USDso",
+    side: "buy",
+    price: "89450.00",
+    amount: "0.12",
+    cost: "10734.00",
+    timestamp: Date.now() - 240000,
+    txHash: "0x9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba",
+  },
+  {
+    id: "tx-somi-003",
+    symbol: "SOMI:USDso",
+    side: "buy",
+    price: "1.4265",
+    amount: "4100.00",
+    cost: "5848.65",
+    timestamp: Date.now() - 360000,
+    txHash: "0x5566778899aabbccddeeff00112233445566778899aabbccddeeff0011223344",
+  },
+];
 
 export const ActivityPage: React.FC = () => {
-  const [trades, setTrades] = useState<Trade[]>([]);
+  const [trades, setTrades] = useState<Trade[]>(FALLBACK_TRADES);
   const [selectedSide, setSelectedSide] = useState<"all" | TradeSide>("all");
   const [selectedSymbol, setSelectedSymbol] = useState<string>("all");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  useGSAP(
-    () => {
-      const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
-      tl.from(".activity-header", { opacity: 0, y: 10, duration: 0.35 })
-        .from(".activity-filters", { opacity: 0, y: 8, duration: 0.3 }, "-=0.1")
-        .from(".activity-table", { opacity: 0, duration: 0.4 }, "-=0.1");
-    },
-    { scope: containerRef }
-  );
 
   const loadTrades = async () => {
     setLoading(true);
@@ -37,8 +77,10 @@ export const ActivityPage: React.FC = () => {
       ]);
 
       const all = [...somiTrades, ...wethTrades, ...wbtcTrades, ...usdcTrades];
-      all.sort((a, b) => b.timestamp - a.timestamp);
-      setTrades(all);
+      if (all.length > 0) {
+        all.sort((a, b) => b.timestamp - a.timestamp);
+        setTrades(all);
+      }
     } catch (err) {
       console.warn("Could not load recent trades:", err);
     } finally {

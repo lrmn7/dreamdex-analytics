@@ -4,11 +4,6 @@ import { formatCurrency, formatBps } from "@/lib/formatters";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { DataPanel } from "@/components/ui/DataPanel";
 import { AreaChart } from "@/components/charts/AreaChart";
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
 
 export const LiquidityPage: React.FC = () => {
   const { points } = useLiquidityAnalytics();
@@ -20,44 +15,6 @@ export const LiquidityPage: React.FC = () => {
     askDepthUsd: 7276500,
     spreadBps: 3.8,
   };
-
-  useGSAP(
-    () => {
-      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-      tl.from(".liquidity-header", { opacity: 0, y: 14, duration: 0.45 })
-        .from(".liquidity-kpi-item", {
-          opacity: 0,
-          y: 18,
-          duration: 0.4,
-          stagger: 0.07,
-        }, "-=0.2");
-
-      gsap.from(".liquidity-chart", {
-        scrollTrigger: { trigger: ".liquidity-chart", start: "top 85%" },
-        opacity: 0,
-        y: 24,
-        duration: 0.55,
-        ease: "power2.out",
-      });
-
-      gsap.from(".panel-left", {
-        scrollTrigger: { trigger: ".liquidity-panels", start: "top 82%" },
-        opacity: 0,
-        x: -16,
-        duration: 0.5,
-        ease: "power2.out",
-      });
-      gsap.from(".panel-right", {
-        scrollTrigger: { trigger: ".liquidity-panels", start: "top 82%" },
-        opacity: 0,
-        x: 16,
-        duration: 0.5,
-        ease: "power2.out",
-        delay: 0.1,
-      });
-    },
-    { scope: containerRef }
-  );
 
   return (
     <div ref={containerRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 space-y-14 font-sans">
